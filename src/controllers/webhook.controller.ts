@@ -3,6 +3,7 @@ import crypto from "node:crypto";
 import type { Response } from "express";
 
 import * as SubscriptionService from "@services/subscription.service.ts";
+import * as SessionService from "@services/session.service.ts";
 
 // Uninstalled webhook
 export const uninstalled = async (
@@ -19,6 +20,7 @@ export const uninstalled = async (
     );
 
     // sessionQueue.add("uninstallSession", { shop });
+    await SessionService.deleteSessionsByShop(shop);
 
     return res.status(200).send("ok");
   } catch (err: any) {
