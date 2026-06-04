@@ -1,0 +1,48 @@
+CREATE TABLE "sessions" (
+  "id" VARCHAR(255),
+  "shop" VARCHAR(255),
+  "state" VARCHAR(255),
+  "isOnline" BOOLEAN,
+  "scope" TEXT,
+  "expires" int4, 
+  "accessToken" VARCHAR(255),
+  "refreshToken" VARCHAR(255),
+  "refreshTokenExpires" int8, 
+  "userId" int8,
+  "firstName" VARCHAR(255),
+  "lastName" VARCHAR(255),
+  "email" VARCHAR(255),
+  "accountOwner" BOOLEAN,
+  "locale" VARCHAR(255),
+  "collaborator" BOOLEAN,
+  "emailVerified" BOOLEAN,
+  "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  "updated_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY ("id")
+);
+
+CREATE INDEX idx_sessions_shop ON "sessions" ("shop");
+
+CREATE TABLE "shop" (
+  "id" UUID DEFAULT gen_random_uuid(),
+  "shopify_id" VARCHAR(255),
+  "primary_domain" VARCHAR(255),
+  "shop_title" VARCHAR(255),
+  "owner_name" VARCHAR(255),
+  "owner_email" VARCHAR(255),
+  "contact_email" VARCHAR(255),
+  "currency" VARCHAR(3),
+  "marketing_consent" BOOLEAN,
+  "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  "updated_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  "session_id" VARCHAR(255),
+  "is_deleted" BOOLEAN DEFAULT FALSE,
+  "deleted_at" TIMESTAMP DEFAULT NULL,
+  PRIMARY KEY ("id")
+);
+
+-- Index: FK join from subscriptions_log → shop
+CREATE INDEX idx_shop_session_id ON "shop" ("session_id");
+
+-- Index: shopify_id lookup (webhook identification)
+CREATE UNIQUE INDEX idx_shop_shopify_id ON "shop" ("shopify_id");

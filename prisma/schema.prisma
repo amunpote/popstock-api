@@ -1,0 +1,55 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["views"]
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model sessions {
+  id                  String    @id @db.VarChar(255)
+  shop                String?   @db.VarChar(255)
+  state               String?   @db.VarChar(255)
+  isOnline            Boolean?
+  scope               String?   @db.VarChar(1024)
+  expires             Int?
+  accessToken         String?   @db.VarChar(255)
+  refreshToken        String?   @db.VarChar(255)
+  refreshTokenExpires BigInt?
+  userId              BigInt?
+  firstName           String?   @db.VarChar(255)
+  lastName            String?   @db.VarChar(255)
+  email               String?   @db.VarChar(255)
+  accountOwner        Boolean?
+  locale              String?   @db.VarChar(255)
+  collaborator        Boolean?
+  emailVerified       Boolean?
+  created_at          DateTime? @default(now()) @db.Timestamp(6)
+  updated_at          DateTime? @default(now()) @db.Timestamp(6)
+
+  @@index([shop], map: "idx_sessions_shop")
+}
+
+model shop {
+  id                String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  shopify_id        String?   @unique(map: "idx_shop_shopify_id") @db.VarChar(255)
+  primary_domain    String?   @db.VarChar(255)
+  shop_title        String?   @db.VarChar(255)
+  owner_name        String?   @db.VarChar(255)
+  owner_email       String?   @db.VarChar(255)
+  contact_email     String?   @db.VarChar(255)
+  currency          String?   @db.VarChar(3)
+  marketing_consent Boolean?
+  created_at        DateTime? @default(now()) @db.Timestamp(6)
+  updated_at        DateTime? @default(now()) @db.Timestamp(6)
+  session_id        String?   @db.VarChar(255)
+  is_deleted        Boolean?  @default(false)
+  deleted_at        DateTime? @db.Timestamp(6)
+
+  @@index([session_id], map: "idx_shop_session_id")
+}
+
+model shopify_sessions_migrations {
+  migration_name String @id @db.VarChar(255)
+}
