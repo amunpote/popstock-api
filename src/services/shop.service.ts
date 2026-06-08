@@ -52,7 +52,12 @@ export const getShopByField = async (
   field = "primary_domain",
 ) => {
   try {
-    const where = { [field]: field_value };
+    const where = {
+      [field]: field_value,
+      NOT: {
+        is_deleted: true,
+      },
+    };
     return await prisma.shop.findFirst({ where });
   } catch (err: any) {
     throw new Error(err);

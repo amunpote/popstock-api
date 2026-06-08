@@ -1,5 +1,3 @@
-import crypto from "node:crypto";
-
 import type { Response } from "express";
 
 import * as SubscriptionService from "@services/subscription.service.ts";

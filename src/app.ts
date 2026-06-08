@@ -1,6 +1,7 @@
 import "@/utils/env.loader.ts";
 
 import express from "express";
+import cors from "cors";
 
 import { shopifyApp, ApiVersion } from "@shopify/shopify-app-express";
 import { PostgreSQLSessionStorage } from "@shopify/shopify-app-session-storage-postgresql";
@@ -16,7 +17,7 @@ export const shopify = shopifyApp({
     apiSecretKey: process.env.SHOPIFY_API_SECRET,
     scopes: process.env.SCOPES?.split(","),
     hostScheme: process.env.HOST,
-    hostName: process.env.SHOPIFY_API_URL,
+    hostName: process.env.SHOPIFY_APP_URL,
     apiVersion: ApiVersion.April26,
   },
   auth: {
@@ -29,6 +30,15 @@ export const shopify = shopifyApp({
 });
 
 const app = express();
+
+app.use(
+  cors({
+    origin: process.env.SHOPIFY_APP_URL, // or a function for dynamic check
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true, // needed for cookies or Authorization headers
+  }),
+);
 
 // Shopify webhooks
 app.use("/webhooks", webhookRoutes);

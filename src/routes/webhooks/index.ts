@@ -21,4 +21,11 @@ router.post(
   webhookController.subscriptionUpdate,
 );
 
+router.post(
+  "/settings/update",
+  rawJson,
+  verifyShopifyWebhook,
+  webhookController.subscriptionUpdate,
+);
+
 export default router;
