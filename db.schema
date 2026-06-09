@@ -38,18 +38,15 @@ CREATE TABLE "shop" (
   "session_id" VARCHAR(255),
   "is_deleted" BOOLEAN DEFAULT FALSE,
   "deleted_at" TIMESTAMPTZ DEFAULT NULL,
-  PRIMARY KEY ("id"),
-  CONSTRAINT "FK_sessions" FOREIGN KEY ("session_id") REFERENCES sessions("id") ON DELETE CASCADE
+  PRIMARY KEY ("id")
 );
 
--- Index: FK join from subscriptions_log → shop
 CREATE INDEX idx_shop_session_id ON "shop" ("session_id");
-
--- Index: shopify_id lookup (webhook identification)
 CREATE UNIQUE INDEX idx_shop_shopify_id ON "shop" ("shopify_id");
 
 CREATE TABLE "threshold_configs" (
   "id" UUID DEFAULT gen_random_uuid(),
+  "label" VARCHAR(255),
   "scope_type" VARCHAR(20) NOT NULL CHECK (scope_type IN ('global', 'collection', 'product', 'variant', 'location')),
   "scope_id" TEXT,
   "unit_type" VARCHAR(20) NOT NULL CHECK (scope_type IN ('fixed_qty', 'percentage')),
@@ -61,5 +58,8 @@ CREATE TABLE "threshold_configs" (
   "created_at" TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
   "updated_at" TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
   "shop_id" UUID,
-  PRIMARY KEY ("id")
+  PRIMARY KEY ("id"),
+  CONSTRAINT "FK_shop" FOREIGN KEY ("shop_id") REFERENCES shop("id") ON DELETE CASCADE
 );
+
+CREATE UNIQUE INDEX idx_label_threshold_config on "threshold_configs" ("label");
