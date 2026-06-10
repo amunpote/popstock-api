@@ -44,17 +44,13 @@ CREATE TABLE "shop" (
 CREATE INDEX idx_shop_session_id ON "shop" ("session_id");
 CREATE UNIQUE INDEX idx_shop_shopify_id ON "shop" ("shopify_id");
 
-CREATE TABLE "threshold_configs" (
+CREATE TABLE "widgets" (
   "id" UUID DEFAULT gen_random_uuid(),
-  "label" VARCHAR(255),
-  "scope_type" VARCHAR(20) NOT NULL CHECK (scope_type IN ('global', 'collection', 'product', 'variant', 'location')),
-  "scope_id" TEXT,
-  "unit_type" VARCHAR(20) NOT NULL CHECK (scope_type IN ('fixed_qty', 'percentage')),
-  "low_value" DECIMAL,
-  "critical_value" DECIMAL,
-  "location_id" TEXT,
-  "priority" INT4,
-  "is_active" BOOLEAN DEFAULT TRUE,
+  "name" VARCHAR(255),
+  "type" VARCHAR(20) NOT NULL,
+  "is_active" BOOLEAN,
+  "display_position" VARCHAR(20),
+  "target_page_types" JSON,
   "created_at" TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
   "updated_at" TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
   "shop_id" UUID,
@@ -62,4 +58,22 @@ CREATE TABLE "threshold_configs" (
   CONSTRAINT "FK_shop" FOREIGN KEY ("shop_id") REFERENCES shop("id") ON DELETE CASCADE
 );
 
-CREATE UNIQUE INDEX idx_label_threshold_config on "threshold_configs" ("label");
+CREATE UNIQUE INDEX idx_shop_widgets ON "widgets" ("shop_id", "name");
+
+CREATE TABLE "product_widget_config" (
+  "id" UUID DEFAULT gen_random_uuid(),
+  "layout" VARCHAR(15) NOT NULL,
+  "layout_config" JSON NOT NULL,
+  "is_active" BOOLEAN,
+  "metric" VARCHAR(20),
+  "operator" VARCHAR(5),
+  "threshold" DECIMAL,
+  "message" VARCHAR(255),
+  "created_at" TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+  "updated_at" TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+  "widget_id" UUID,
+  PRIMARY KEY ("id"),
+  CONSTRAINT "FK_product_widget" FOREIGN KEY ("widget_id") REFERENCES widgets("id") ON DELETE CASCADE
+);
+
+CREATE UNIQUE INDEX idx_product_widget_config ON "product_widget_config" ("widget_id", "metric", "operator", "threshold");
