@@ -7,9 +7,12 @@ import { shopifyApp, ApiVersion } from "@shopify/shopify-app-express";
 import { PostgreSQLSessionStorage } from "@shopify/shopify-app-session-storage-postgresql";
 
 import { authMiddleware } from "@middleware/auth.middleware.ts";
+import { verifyBearerToken } from "@middleware/verifyBearerToken.middleware.ts";
 
 import webhookRoutes from "@routes/webhooks/index.ts";
 import v1Routes from "@routes/v1/index.ts";
+
+import proxyRoutes from "@routes/proxy/index.ts";
 
 export const shopify = shopifyApp({
   api: {
@@ -45,6 +48,8 @@ app.use("/webhooks", webhookRoutes);
 
 // Middleware parse JSON bodies
 app.use(express.json());
+
+app.use("/proxy", verifyBearerToken, proxyRoutes);
 
 const port = process.env.PORT || 4000;
 
